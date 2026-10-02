@@ -80,6 +80,29 @@
   .cta .alt{display:block;max-width:520px;margin:9px auto 0;text-align:center;background:transparent;
     border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:14.5px;
     font-weight:700;padding:13px;border-radius:11px}
+
+  /* 미리보기 영상 팝업 (2026-10-02 대표님 지시 — 「이걸 동영상 찍어서 일부를 신청링크에 팝업으로 볼수있도록 올려」)
+     영상 원본·굽는 코드 : 본사\작업\10월이벤트-여성골격PPT\영상\ (굽기.py) */
+  .vbtn{margin:14px auto 0;display:inline-flex;align-items:center;gap:9px;background:var(--card);
+    border:1px solid var(--line);color:var(--ink);font:inherit;font-size:14px;font-weight:700;
+    padding:9px 16px 9px 10px;border-radius:999px;cursor:pointer}
+  .pi{width:26px;height:26px;border-radius:50%;background:var(--blue-d);position:relative;flex:0 0 auto;display:block}
+  .pi::after{content:"";position:absolute;left:10px;top:7px;border-style:solid;border-width:6px 0 6px 9px;
+    border-color:transparent transparent transparent #fff}
+  .vcard{display:block;position:relative;width:100%;padding:0;margin:0 0 12px;border:0;background:none;cursor:pointer}
+  .vcard .shot{margin:0}
+  .vcard .pi{position:absolute;left:50%;top:36%;width:76px;height:76px;margin:-38px 0 0 -38px;
+    background:rgba(20,86,240,.92);box-shadow:0 6px 22px rgba(0,0,0,.45)}
+  .vcard .pi::after{left:30px;top:24px;border-width:14px 0 14px 21px}
+  .vmodal{position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.9);display:flex;align-items:center;
+    justify-content:center;padding:16px}
+  .vmodal[hidden]{display:none}
+  .vbox{width:100%;max-width:920px}
+  .vbox video{display:block;width:100%;max-height:calc(100vh - 170px);aspect-ratio:16/9;background:#000;
+    border-radius:10px;object-fit:contain}
+  .vcap{margin-top:12px;font-size:13.5px;color:var(--sub);text-align:center}
+  .vclose{display:block;margin:0 0 10px auto;background:transparent;border:1px solid var(--line);color:var(--ink);
+    font:inherit;font-size:14px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -90,6 +113,7 @@
     <h1>여성 골격진단<br>PPT 템플릿 166장<span class="dot">.</span></h1>
     <p class="lead">여성 골격진단 자료를 직접 만들면<br>한 장에 한 시간 가까이 걸립니다.</p>
     <div class="period">10월 이벤트 · 10/02(금) ~ 10/04(일) 사흘 한정</div>
+    <div><button class="vbtn" type="button" data-vopen><span class="pi"></span>40초 영상으로 넘겨 보기</button></div>
   </header>
 
   <section>
@@ -109,6 +133,10 @@
 
   <section>
     <h2>자료 미리보기</h2>
+    <button class="vcard" type="button" data-vopen aria-label="미리보기 영상 열기">
+      <img class="shot" src="img/preview-card.jpg?v=20261002a" alt="여성 골격진단 PPT 166장 가운데 40초만 넘겨 봅니다" width="774" height="968" loading="lazy">
+      <span class="pi"></span>
+    </button>
     <img class="shot" src="img/inside.jpg" alt="여성 골격진단 PPT 템플릿 — 체형별 구성 미리보기" width="774" height="990" loading="lazy">
     <img class="shot" src="img/compare.jpg" alt="직접 만들 때와 완성 자료를 받을 때의 비교" width="774" height="990" loading="lazy">
   </section>
@@ -152,10 +180,35 @@
   <a class="alt" href="tel:01020252767">전화로 문의 · 010-2025-2767</a>
 </div>
 
+<div class="vmodal" id="vmodal" hidden role="dialog" aria-modal="true" aria-label="자료 미리보기 영상">
+  <div class="vbox">
+    <button class="vclose" type="button" id="vclose">닫기 ✕</button>
+    <video id="vplayer" playsinline muted loop controls preload="none" controlsList="nodownload"
+           disablePictureInPicture poster="img/preview-poster.jpg?v=20261002a"></video>
+    <p class="vcap">166장 가운데 일부만 넘긴 화면입니다. 어떤 장이 들어 있는지 보시고 신청하시면 됩니다.</p>
+  </div>
+</div>
+
 <script>
   document.addEventListener('contextmenu', function(e){
-    if (e.target && e.target.tagName === 'IMG') e.preventDefault();
+    if (e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO')) e.preventDefault();
   });
+  // 미리보기 영상 팝업 — 영상은 누르셨을 때만 받는다(5.6MB · preload="none")
+  (function(){
+    var m = document.getElementById('vmodal'), v = document.getElementById('vplayer');
+    var SRC = 'img/preview.mp4?v=20261002a';
+    function 열기(){
+      m.hidden = false; document.body.style.overflow = 'hidden';
+      if (!v.getAttribute('src')) v.setAttribute('src', SRC);
+      try { v.currentTime = 0; } catch(e) {}
+      var p = v.play(); if (p && p.catch) p.catch(function(){});
+    }
+    function 닫기(){ v.pause(); m.hidden = true; document.body.style.overflow = ''; }
+    Array.prototype.forEach.call(document.querySelectorAll('[data-vopen]'), function(b){ b.addEventListener('click', 열기); });
+    document.getElementById('vclose').addEventListener('click', 닫기);
+    m.addEventListener('click', function(e){ if (e.target === m) 닫기(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !m.hidden) 닫기(); });
+  })();
 </script>
 <!-- 한정판매 마감 초시계 (2026-09-24 대표님 지시) — 마감 시각은 iami-link/sales.json 이 정본이다. 여기 적지 않는다 -->
 <script src="https://ardentor.github.io/iami-link/countdown.js?v=20260924b" defer></script>
