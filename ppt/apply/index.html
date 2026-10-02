@@ -194,7 +194,8 @@ var ROUND    = "2026-10 여성 골격진단 PPT 템플릿 166장 (10월 이벤�
 var LANDING  = "https://ardentor.github.io/iami-body/ppt/";
 
 var PRODS = [
-  { k:'여성 골격진단 PPT 템플릿 166장', note:'스트레이트 · 웨이브 · 내추럴 · .pptx 원본', price:180000, was:490000 }
+  /* show 는 화면 이름 — 360px 에서 「166 / 장」으로 쪼개져 장수를 note 로 내렸다. 접수 기록은 k 그대로다 */
+  { k:'여성 골격진단 PPT 템플릿 166장', show:'여성 골격진단 PPT 템플릿', note:'166장 · 스트레이트 · 웨이브 · 내추럴 · .pptx 원본', price:180000, was:490000 }
 ];
 
 var AGREE_LABEL = [
@@ -210,7 +211,7 @@ function $(id){ return document.getElementById(id); }
 var ph = "";
 for (var i = 0; i < PRODS.length; i++) {
   ph += '<label class="opt"><input type="checkbox" class="pType" data-i="' + i + '"' + (PRODS.length === 1 ? ' checked' : '') + '>' +
-        '<span class="t">' + PRODS[i].k + '<small>' + PRODS[i].note + '</small></span>' +
+        '<span class="t">' + (PRODS[i].show || PRODS[i].k) + '<small>' + PRODS[i].note + '</small></span>' +
         '<span class="p">' + (PRODS[i].was ? '<s>' + won(PRODS[i].was) + '</s>' : '') + won(PRODS[i].price) + '</span></label>';
 }
 $("prods").innerHTML = ph;
